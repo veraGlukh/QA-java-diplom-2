@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
+import static ru.yandex.practicum.burgers.UserClient.EMPTY_ACCESS_TOKEN;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 
@@ -62,9 +64,8 @@ public class OrderCreatingTest {
     @DisplayName("Check status code and message of POST /api/orders")
     @Description("Basic test for POST /api/orders with valid order without authorization")
     public void orderCanBeCreatedWithoutAuthorization(){
-        accessToken = "";
         order = OrderGenerator.getValidOrderWithIngredients();
-        ValidatableResponse createOrderResponse = orderClient.create(accessToken, order);
+        ValidatableResponse createOrderResponse = orderClient.create(EMPTY_ACCESS_TOKEN, order);
 
         int statusCode = createOrderResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_OK, statusCode);
@@ -85,9 +86,8 @@ public class OrderCreatingTest {
     @DisplayName("Check status code and message of POST /api/orders")
     @Description("Negative test for POST /api/orders with invalid order without ingredients")
     public void orderCanNotBeCreatedWithoutIngredients(){
-        accessToken = "";
         order = OrderGenerator.getInvalidOrderWithoutIngredients();
-        ValidatableResponse createOrderResponse = orderClient.create(accessToken, order);
+        ValidatableResponse createOrderResponse = orderClient.create(EMPTY_ACCESS_TOKEN, order);
 
         int statusCode = createOrderResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_BAD_REQUEST, statusCode);
@@ -106,9 +106,8 @@ public class OrderCreatingTest {
     @DisplayName("Check status code and message of POST /api/orders")
     @Description("Negative test for POST /api/orders with invalid order with invalid ingredients hash")
     public void orderCanNotBeCreatedWithInvalidIngredientsHash(){
-        accessToken = "";
         order = OrderGenerator.getInvalidOrderWithInvalidIngredientsHash();
-        ValidatableResponse createOrderResponse = orderClient.create(accessToken, order);
+        ValidatableResponse createOrderResponse = orderClient.create(EMPTY_ACCESS_TOKEN, order);
 
         int statusCode = createOrderResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_INTERNAL_SERVER_ERROR, statusCode);

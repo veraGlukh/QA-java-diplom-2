@@ -8,6 +8,7 @@ import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
+import static ru.yandex.practicum.burgers.UserClient.EMPTY_ACCESS_TOKEN;
 
 public class UserChangeTest {
 
@@ -112,11 +113,11 @@ public class UserChangeTest {
     @Description("Negative test for PATCH /api/auth/user with email change without authorization")
     public void userEmailCanNotBeUpdatedWithoutAuthorization(){
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
-        accessToken = "";
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя после выполнения теста
 
         UserGenerator.getValidWithUpdatedEmail(user);
-        ValidatableResponse changeUserResponse = userClient.change(accessToken, user);
+        ValidatableResponse changeUserResponse = userClient.change(EMPTY_ACCESS_TOKEN, user);
 
         int statusCode = changeUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_UNAUTHORIZED, statusCode);
@@ -136,11 +137,11 @@ public class UserChangeTest {
     @Description("Negative test for PATCH /api/auth/user with password change without authorization")
     public void userPasswordCanNotBeUpdatedWithoutAuthorization(){
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
-        accessToken = "";
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя после выполнения теста
 
         UserGenerator.getValidWithUpdatedPassword(user);
-        ValidatableResponse changeUserResponse = userClient.change(accessToken, user);
+        ValidatableResponse changeUserResponse = userClient.change(EMPTY_ACCESS_TOKEN, user);
 
         int statusCode = changeUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_UNAUTHORIZED, statusCode);
@@ -160,11 +161,11 @@ public class UserChangeTest {
     @Description("Negative test for PATCH /api/auth/user with name change without authorization")
     public void userNameCanNotBeUpdatedWithoutAuthorization(){
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
-        accessToken = "";
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя после выполнения теста
 
         UserGenerator.getValidWithUpdatedName(user);
-        ValidatableResponse changeUserResponse = userClient.change(accessToken, user);
+        ValidatableResponse changeUserResponse = userClient.change(EMPTY_ACCESS_TOKEN, user);
 
         int statusCode = changeUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_UNAUTHORIZED, statusCode);

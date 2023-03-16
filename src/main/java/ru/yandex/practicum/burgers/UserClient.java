@@ -9,6 +9,7 @@ public class UserClient extends Client {
     private static final String USER_LOGIN_PATH = "/api/auth/login";
     private static final String USER_DELETE_PATH = "/api/auth/user";
     private static final String USER_CHANGE_PATH = "/api/auth/user";
+    public static final String EMPTY_ACCESS_TOKEN = "";
 
     public ValidatableResponse create(User user) {
         return given()

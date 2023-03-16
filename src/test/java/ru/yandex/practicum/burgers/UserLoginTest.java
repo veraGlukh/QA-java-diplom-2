@@ -35,7 +35,9 @@ public class UserLoginTest {
     @Description("Basic test for POST /api/auth/login with valid user with all required fields filled in")
     public void uniqueUserCanLogin(){
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
+
         ValidatableResponse loginUserResponse = userClient.login(UserCredentials.from(user));
 
         int statusCode = loginUserResponse.extract().statusCode();
@@ -44,7 +46,7 @@ public class UserLoginTest {
         boolean result = loginUserResponse.extract().path("success");
         assertTrue("Результат не соответствует:", result);
 
-        accessToken = loginUserResponse.extract().path("accessToken");
+        accessToken = loginUserResponse.extract().path("accessToken"); // для удаления пользователя после выполнения теста
         assertNotNull("В теле ответа нет accessToken:", accessToken);
 
         boolean isAccessTokenFormatCorrect = accessToken.startsWith("Bearer");
@@ -67,8 +69,11 @@ public class UserLoginTest {
     @Description("Negative test for POST /api/auth/login with user with invalid email")
     public void userWithInvalidEmailCanNotLogin(){
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя после выполнения теста
+
         ValidatableResponse loginUserResponse = userClient.login(UserCredentials.returnCredentialsWithInvalidEmail(user));
+        accessToken = loginUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = loginUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_UNAUTHORIZED, statusCode);
@@ -86,8 +91,11 @@ public class UserLoginTest {
     @Description("Negative test for POST /api/auth/login with user with invalid password")
     public void userWithInvalidPasswordCanNotLogin(){
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя после выполнения теста
+
         ValidatableResponse loginUserResponse = userClient.login(UserCredentials.returnCredentialsWithInvalidPassword(user));
+        accessToken = loginUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = loginUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_UNAUTHORIZED, statusCode);

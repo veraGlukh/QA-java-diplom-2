@@ -9,6 +9,8 @@ import static org.junit.Assert.*;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static ru.yandex.practicum.burgers.UserClient.EMPTY_ACCESS_TOKEN;
+
 import org.hamcrest.MatcherAssert;
 import java.util.List;
 
@@ -95,13 +97,13 @@ public class UserOrderListTest {
     @Description("Negative test for GET /api/orders without authorization")
     public void orderCanNotBeProvidedWithoutAuthorization() {
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
-        accessToken = "";
+        ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken");
 
         order = OrderGenerator.getValidOrderWithIngredients();
         orderClient.create(accessToken, order);
 
-        ValidatableResponse getUserOrderListResponse = orderClient.getUserOrderList(accessToken);
+        ValidatableResponse getUserOrderListResponse = orderClient.getUserOrderList(EMPTY_ACCESS_TOKEN);
 
         int statusCode = getUserOrderListResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_UNAUTHORIZED, statusCode);

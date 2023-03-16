@@ -14,6 +14,7 @@ public class UserCreatingTest {
     private User user;
     private UserClient userClient;
     private String accessToken;
+    private String accessTokenRepeated;
     private String refreshToken;
 
     @Before
@@ -25,6 +26,9 @@ public class UserCreatingTest {
     public void cleanUp() {
         if(accessToken != null) {
             userClient.delete(accessToken);
+        }
+        if (accessTokenRepeated != null) {
+            userClient.delete(accessTokenRepeated);
         }
     }
 
@@ -66,17 +70,20 @@ public class UserCreatingTest {
     @Description("Negative test for POST /api/auth/register with invalid user with existent email and name")
     public void twoSameUsersCanNotBeCreated() {
         user = UserGenerator.getValidAllFields();
-        userClient.create(user);
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
-        int statusCode = createUserResponse.extract().statusCode();
+        ValidatableResponse repeatedCreateUserResponse = userClient.create(user);
+        accessTokenRepeated = repeatedCreateUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
+
+        int statusCode = repeatedCreateUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
 
-        boolean result = createUserResponse.extract().path("success");
+        boolean result = repeatedCreateUserResponse.extract().path("success");
         assertFalse("Результат не соответствует:", result);
 
         String expectedMessage = "User already exists";
-        String actualMessage = createUserResponse.extract().path("message");
+        String actualMessage = repeatedCreateUserResponse.extract().path("message");
         assertEquals("Сообщение не соответствует:", expectedMessage, actualMessage);
     }
 
@@ -88,6 +95,7 @@ public class UserCreatingTest {
     public void userCanNotBeCreatedWithEmailNull() {
         user = UserGenerator.getInvalidWithEmailNull();
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = createUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
@@ -106,6 +114,7 @@ public class UserCreatingTest {
     public void userCanNotBeCreatedWithEmailEmpty() {
         user = UserGenerator.getInvalidWithEmailEmpty();
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = createUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
@@ -124,6 +133,7 @@ public class UserCreatingTest {
     public void userCanNotBeCreatedWithPasswordNull() {
         user = UserGenerator.getInvalidWithPasswordNull();
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = createUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
@@ -142,6 +152,7 @@ public class UserCreatingTest {
     public void userCanNotBeCreatedWithPasswordEmpty() {
         user = UserGenerator.getInvalidWithPasswordEmpty();
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = createUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
@@ -160,6 +171,7 @@ public class UserCreatingTest {
     public void userCanNotBeCreatedWithNameNull() {
         user = UserGenerator.getInvalidWithNameNull();
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = createUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
@@ -178,6 +190,7 @@ public class UserCreatingTest {
     public void userCanNotBeCreatedWithNameEmpty() {
         user = UserGenerator.getInvalidWithNameEmpty();
         ValidatableResponse createUserResponse = userClient.create(user);
+        accessToken = createUserResponse.extract().path("accessToken"); // для удаления пользователя в случае некорректной работы метода
 
         int statusCode = createUserResponse.extract().statusCode();
         assertEquals("Код ответа не соответствует:", SC_FORBIDDEN, statusCode);
