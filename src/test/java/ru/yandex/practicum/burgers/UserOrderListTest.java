@@ -10,7 +10,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static ru.yandex.practicum.burgers.UserClient.EMPTY_ACCESS_TOKEN;
-
 import org.hamcrest.MatcherAssert;
 import java.util.List;
 

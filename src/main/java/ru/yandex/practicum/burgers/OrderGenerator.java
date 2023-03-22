@@ -1,5 +1,6 @@
 package ru.yandex.practicum.burgers;
 
+import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +8,6 @@ import java.util.Random;
 
 public class OrderGenerator {
 
-    static int maxIngredientsNum = 15;
-    static String[] allIngredients = {"61c0c5a71d1f82001bdaaa6d", "61c0c5a71d1f82001bdaaa6f", "61c0c5a71d1f82001bdaaa70",
-            "61c0c5a71d1f82001bdaaa71", "61c0c5a71d1f82001bdaaa72", "61c0c5a71d1f82001bdaaa6e",
-            "61c0c5a71d1f82001bdaaa73", "61c0c5a71d1f82001bdaaa74", "61c0c5a71d1f82001bdaaa6c",
-            "61c0c5a71d1f82001bdaaa75", "61c0c5a71d1f82001bdaaa76", "61c0c5a71d1f82001bdaaa77",
-            "61c0c5a71d1f82001bdaaa78", "61c0c5a71d1f82001bdaaa79", "61c0c5a71d1f82001bdaaa7a"};
     static Random random = new Random();
     static int length = 1;
     static boolean useLetters = true;
@@ -21,9 +16,16 @@ public class OrderGenerator {
 
     // Метод создания валидного заказа с ингредиентами
     public static Order getValidOrderWithIngredients() {
+        OrderClient orderClient = new OrderClient();
+        ValidatableResponse getIngredientListResponse = orderClient.getIngredientList();
+        IngredientList ingredientList = getIngredientListResponse.extract().body().as(IngredientList.class);
+
         List<String> randomIngredients = new ArrayList<>();
-        randomIngredients.add(allIngredients[random.nextInt(maxIngredientsNum)]);
-        randomIngredients.add(allIngredients[random.nextInt(maxIngredientsNum)]);
+        int randomFirstIngredientIndex = random.nextInt(ingredientList.getData().size());
+        randomIngredients.add(ingredientList.getData().get(randomFirstIngredientIndex).get_id());
+        int randomSecondIngredientIndex = random.nextInt(ingredientList.getData().size());
+        randomIngredients.add(ingredientList.getData().get(randomSecondIngredientIndex).get_id());
+
         return new Order(randomIngredients);
     }
 
@@ -35,9 +37,16 @@ public class OrderGenerator {
 
     // Метод создания невалидного заказа с неверным хешем ингредиентов
     public static Order getInvalidOrderWithInvalidIngredientsHash() {
+        OrderClient orderClient = new OrderClient();
+        ValidatableResponse getIngredientListResponse = orderClient.getIngredientList();
+        IngredientList ingredientList = getIngredientListResponse.extract().body().as(IngredientList.class);
+
         List<String> randomIngredients = new ArrayList<>();
-        randomIngredients.add(allIngredients[random.nextInt(maxIngredientsNum)] + randomSymbol);
-        randomIngredients.add(allIngredients[random.nextInt(maxIngredientsNum)] + randomSymbol);
+        int randomFirstIngredientIndex = random.nextInt(ingredientList.getData().size());
+        randomIngredients.add(ingredientList.getData().get(randomFirstIngredientIndex).get_id() + randomSymbol);
+        int randomSecondIngredientIndex = random.nextInt(ingredientList.getData().size());
+        randomIngredients.add(ingredientList.getData().get(randomSecondIngredientIndex).get_id() + randomSymbol);
+
         return new Order(randomIngredients);
     }
 }

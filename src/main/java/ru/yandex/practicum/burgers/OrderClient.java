@@ -7,6 +7,7 @@ public class OrderClient extends Client {
 
     private static final String ORDER_CREATE_PATH = "/api/orders";
     private static final String USER_ORDER_LIST_PATH = "/api/orders";
+    private static final String INGREDIENT_LIST_PATH = "/api/ingredients";
 
     public ValidatableResponse create(String accessToken, Order order) {
         return given()
@@ -24,6 +25,14 @@ public class OrderClient extends Client {
                 .header("Authorization", accessToken)
                 .when()
                 .get(USER_ORDER_LIST_PATH)
+                .then();
+    }
+
+    public ValidatableResponse getIngredientList() {
+        return given()
+                .spec(getSpec())
+                .when()
+                .get(INGREDIENT_LIST_PATH)
                 .then();
     }
 }
